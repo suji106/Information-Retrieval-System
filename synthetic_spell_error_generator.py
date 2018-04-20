@@ -6,6 +6,7 @@ def synthetic_spell_error_generator(query):
     print query
 
     query_terms = query.split()
+
     query_errored = []
 
     for i in query_terms:
@@ -15,13 +16,19 @@ def synthetic_spell_error_generator(query):
 
     error_terms = random.randint(0, error_ratio)
 
+    query_terms_lens = []
+    for i in range(0, len(query_terms)):
+        query_terms_lens.append(len(query_terms[i]))
+
     error_indexes = []
     for i in range(0, error_terms):
-        while 1 > 0:
-            rand_num = random.randint(0, len(query_terms) - 1)
-            if rand_num not in error_indexes and len(query_terms[rand_num]) >= 4:
-                error_indexes.append(rand_num)
-                break
+
+        max_val = max(query_terms_lens)
+
+        for e in range(0, len(query_terms_lens)):
+            if query_terms_lens[e] is max_val:
+                query_terms_lens[e] = 0
+                error_indexes.append(e)
 
     error_indexes = sorted(error_indexes)
 
@@ -36,6 +43,7 @@ def synthetic_spell_error_generator(query):
             change_num -= 2
 
         for j in range(0, change_num):
+
             while len(term) >= 4:
                 rand_num = random.randint(1, len(term) - 2)
                 if rand_num not in change:
@@ -58,4 +66,4 @@ def synthetic_spell_error_generator(query):
     print query_with_errors
 
 
-synthetic_spell_error_generator('This would be very difficult word enjoying itself')
+synthetic_spell_error_generator('This would be very difficult word enjoying itself. One of the biggest problems of taking information retrieval would be studying without breaks')
