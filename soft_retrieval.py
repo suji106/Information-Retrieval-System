@@ -4,13 +4,10 @@ import json
 
 def check_in_unigrams(term):
 
-    dict_read = open('C:/Users/Srivardhan/Desktop/NeU/IR/project/code/unigrams_tf.json')
-    unigram_dict = json.load(dict_read)
-
     edit_dist_dict = {}
 
     for i in unigram_dict:
-        if i[0] == term[0] and i[len(i) - 1] == term[len(term) - 1] and len(i) == len(term):
+        if i[0] == term[0] and i[len(i) - 1] == term[len(term) - 1]: # and len(i) == len(term): # for accurate search
             edit_dist_dict[i] = edit_distance(term, i, len(term), len(i))
 
     best_dist = 100
@@ -29,6 +26,8 @@ def check_in_unigrams(term):
 
     for i in best_words:
         best_words_tf.append(unigram_dict[i])
+
+    max_tf = 0
 
     if len(best_words_tf) > 0:
         max_tf = max(best_words_tf)
@@ -57,16 +56,41 @@ def edit_distance(term, unigram, term_len, term_unigram):
                ) + 1
 
 
-def _soft_noise_remover_():
+def _soft_noise_remover_(inp):
 
-    inp = raw_input("Please enter the query\n")
+    # inp = raw_input("Please enter the query\n")
 
-    best_suggestion = check_in_unigrams(inp.lower())
+    input_terms = inp.lower().split()
 
-    if best_suggestion != inp.lower():
-        print('Searching for term: ' + best_suggestion)
-    else:
-        print('No suggestion found for the term. Ranking using the same term instead: ' + best_suggestion)
+    modified_query = ''
+
+    for i in input_terms:
+        term = i.lower()
+
+        if term not in unigram_dict:
+            best_suggestion = check_in_unigrams(term)
+
+            if best_suggestion != term:
+                print 'Closest term found for ' + term + ': ' + best_suggestion
+            else:
+                print('No suggestion found for the term. Ranking using the same term instead: ' + best_suggestion)
+
+        else:
+            print 'Term found: ' + term
+            best_suggestion = term
+
+        modified_query += best_suggestion + ' '
+
+    modified_query = modified_query[0: -1]
+
+    return modified_query
 
 
-_soft_noise_remover_()
+dict_read = open('C:/***/unigrams_tf.json')         # path for the unigrams json file
+unigram_dict = json.load(dict_read)
+
+query = 'moust intresting plaice on the erth'
+
+query = _soft_noise_remover_(query)
+
+print '\nRanking now for the query: ' + query
